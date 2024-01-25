@@ -6,6 +6,7 @@ import {
   clearValues,
   createJob,
   handleChange,
+  editJob,
 } from "../../features/job/jobSlice";
 import { useEffect } from "react";
 
@@ -20,7 +21,6 @@ const AddJob = () => {
     statusOptions,
     status,
     isEditing,
-    editJob,
     editJobId,
   } = useSelector((store) => store.job);
   const { user } = useSelector((store) => store.user);
@@ -29,6 +29,21 @@ const AddJob = () => {
     e.preventDefault();
     if (!position || !company || !jobLocation) {
       toast.error("Please fill out all fields");
+      return;
+    }
+    if (isEditing) {
+      dispatch(
+        editJob({
+          jobId: editJobId,
+          job: {
+            position,
+            company,
+            jobType,
+            jobLocation,
+            status,
+          },
+        })
+      );
       return;
     }
     dispatch(createJob({ position, company, jobLocation, jobType, status }));
@@ -40,8 +55,10 @@ const AddJob = () => {
     dispatch(handleChange({ name, value }));
   };
   useEffect(() => {
-    dispatch(handleChange({ name: "jobLocation", value: user.location }));
-    return () => {};
+    if (!isEditing) {
+      dispatch(handleChange({ name: "jobLocation", value: user.location }));
+      return () => {};
+    }
   }, []);
 
   return (

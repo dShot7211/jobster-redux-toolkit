@@ -42,6 +42,14 @@ export const getAllJobs = createAsyncThunk(
 const allJobSlice = createSlice({
   name: "allJobs",
   initialState,
+  reducers: {
+    showLoading: (state) => {
+      state.isLoading = true;
+    },
+    hideLoading: (state) => {
+      state.isLoading = false;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getAllJobs.pending, (state) => {
@@ -49,7 +57,7 @@ const allJobSlice = createSlice({
       })
       .addCase(getAllJobs.fulfilled, (state, { payload }) => {
         state.isLoading = false;
-        state.jobs = payload.jobs;
+        state.jobs = payload?.jobs;
       })
       .addCase(getAllJobs.rejected, (state, { payload }) => {
         state.isLoading = false;
@@ -57,5 +65,6 @@ const allJobSlice = createSlice({
       });
   },
 });
+export const { showLoading, hideLoading } = allJobSlice.actions;
 
 export default allJobSlice.reducer;
