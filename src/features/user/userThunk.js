@@ -19,12 +19,13 @@ export const loginUserThunk = async (url, user, thunkAPI) => {
 };
 export const updateUserThunk = async (url, user, thunkAPI) => {
   try {
-    const resp = await customFetch.patch(url, user, {
-      headers: {
-        //                               entireState->userSlice->userPropertyofSlice->token
-        authorization: `Bearer ${thunkAPI.getState().user.user.token}`,
-      },
-    });
+    const resp = await customFetch.patch(url, user);
+    // const resp = await customFetch.patch(url, user, {
+    //   headers: {
+    //     //                               entireState->userSlice->userPropertyofSlice->token
+    //     authorization: `Bearer ${thunkAPI.getState().user.user.token}`,
+    //   },
+    // });
     return resp.data;
   } catch (err) {
     console.log(err.response);
