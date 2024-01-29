@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
-import customFetch from "../../utils/axios";
+import { getAllJobsThunk, showStatsThunk } from "./allJobsThunk";
 
 const initialFiltersState = {
   search: "",
@@ -21,19 +21,8 @@ const initialState = {
   ...initialFiltersState,
 };
 
-export const getAllJobs = createAsyncThunk(
-  "allJobs/getJobs",
-  async (_, thunkAPI) => {
-    let url = `/jobs`;
-
-    try {
-      const resp = await customFetch.get(url);
-      return resp.data;
-    } catch (err) {
-      thunkAPI.rejectWithValue(err.response.data.msg);
-    }
-  }
-);
+export const getAllJobs = createAsyncThunk("allJobs/getJobs", getAllJobsThunk);
+export const showStats = createAsyncThunk("allJobs/showStats", showStatsThunk);
 
 const allJobSlice = createSlice({
   name: "allJobs",
@@ -45,6 +34,20 @@ const allJobSlice = createSlice({
     hideLoading: (state) => {
       state.isLoading = false;
     },
+    handleChange: (state, { payload: { name, value } }) => {
+      state.page = 1;
+      state[name] = value;
+    },
+    clearFilters: (state) => {
+      return { ...state, ...initialFiltersState };
+    },
+
+    changePage: (state, { payload }) => {
+      state.page = payload;
+    },
+    clearAllJobsState: (state) => {
+      return initialState;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -53,14 +56,35 @@ const allJobSlice = createSlice({
       })
       .addCase(getAllJobs.fulfilled, (state, { payload }) => {
         state.isLoading = false;
+        state.numOfPages = payload.numOfPages;
+        state.totalJobs = payload.totalJobs;
         state.jobs = payload?.jobs;
       })
       .addCase(getAllJobs.rejected, (state, { payload }) => {
         state.isLoading = false;
         toast.error(payload);
+      })
+      .addCase(showStats.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(showStats.fulfilled, (state, { payload }) => {
+        state.isLoading = false;
+        state.stats = payload?.defaultStats;
+        state.monthlyApplications = payload?.monthlyApplications;
+      })
+      .addCase(showStats.rejected, (state, { payload }) => {
+        state.isLoading = false;
+        toast.error(payload);
       });
   },
 });
-export const { showLoading, hideLoading } = allJobSlice.actions;
+export const {
+  showLoading,
+  hideLoading,
+  handleChange,
+  clearFilters,
+  changePage,
+  clearAllJobsState,
+} = allJobSlice.actions;
 
 export default allJobSlice.reducer;

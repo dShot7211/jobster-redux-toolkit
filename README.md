@@ -3,6 +3,17 @@
 login : avinash122@gmail.com
 pass: Test@1234
 
+to install react 17 or any other version of react in existing project
+if some lib doesnt support latest version of react and our project is on that version
+npm install react@17 react-dom@17
+and then go back to 18 react
+npm install react@18 react-dom@18
+
+const pages = Array.from({ length: numOfPages }, (\_, index) => {
+return index + 1;
+});
+to make an array consisting of length of out choosing and items that we want to put in the array
+
 Project in Action - [Jobster](https://redux-toolkit-jobster.netlify.app/)
 
 #### React Course
